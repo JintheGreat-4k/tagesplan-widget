@@ -39,10 +39,10 @@ public final class MainActivity extends Activity {
         super.onCreate(b);
         setContentView(R.layout.activity_main);
         View root = findViewById(R.id.root);
-        int pad = (int) (20 * getResources().getDisplayMetrics().density);
+        // Rand 20dp steht im Layout. Hier nur Statusleiste, Navigationsleiste und Tastatur freihalten (Android 15 zeichnet bis an den Rand).
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             Insets i = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
-            v.setPadding(i.left + pad, i.top + pad, i.right + pad, i.bottom + pad);
+            v.setPadding(i.left, i.top, i.right, i.bottom);
             return WindowInsets.CONSUMED;
         });
         status = findViewById(R.id.status);
