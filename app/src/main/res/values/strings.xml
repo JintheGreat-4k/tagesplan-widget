@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tagesplan Widget</string>
+    <string name="widget_aufgaben">Tagesplan · Aufgaben</string>
+    <string name="widget_kalender">Tagesplan · Kalender</string>
+    <string name="beschr_aufgaben">Offene Aufgaben, die wichtigsten zuerst. Direkt abhaken.</string>
+    <string name="beschr_kalender">Termine von heute und den nächsten 6 Tagen.</string>
+</resources>

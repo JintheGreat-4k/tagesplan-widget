@@ -1,0 +1,56 @@
+plugins {
+    id "com.android.application"
+}
+
+// Signieren nur auf GitHub (Schlüssel als Secret). Ohne Schlüssel bleibt die Release-Datei unsigniert.
+def keystore = System.getenv("KEYSTORE_FILE")
+
+android {
+    namespace "io.github.jinthegreat4k.tagesplanwidget"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "io.github.jinthegreat4k.tagesplanwidget"
+        minSdk 31
+        targetSdk 35
+        versionCode((System.getenv("VERSION_CODE") ?: "1").toInteger())
+        versionName(System.getenv("VERSION_NAME") ?: "1.0")
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    signingConfigs {
+        release {
+            if (keystore) {
+                storeFile file(keystore)
+                storePassword System.getenv("KEYSTORE_PASS")
+                keyAlias "tagesplan"
+                keyPassword System.getenv("KEYSTORE_PASS")
+                storeType "pkcs12"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (keystore) signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+    }
+}
+
+dependencies {
+    testImplementation "junit:junit:4.13.2"
+    testImplementation "org.json:json:20240303"
+}

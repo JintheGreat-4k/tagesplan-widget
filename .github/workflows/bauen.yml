@@ -1,0 +1,85 @@
+name: Bauen und testen
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bauen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.11.1"
+
+      - name: Prüfungen und Test-Version
+        run: gradle --no-daemon testDebugUnitTest assembleDebug
+
+      - name: Emulator vorbereiten
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Test im Android-Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -timezone Europe/Zurich
+          script: bash tools/emulator_test.sh
+
+      - name: Bilder und Protokolle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bilder
+          path: |
+            bilder/
+            app/build/reports/tests/
+          if-no-files-found: ignore
+
+      - name: Signierte App
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then echo "Kein Schlüssel hinterlegt, keine signierte App."; exit 0; fi
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/tagesplan.p12"
+          export KEYSTORE_FILE="$RUNNER_TEMP/tagesplan.p12" VERSION_CODE="$GITHUB_RUN_NUMBER"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then export VERSION_NAME="${GITHUB_REF_NAME#v}"; else export VERSION_NAME="0.0.$GITHUB_RUN_NUMBER-test"; fi
+          gradle --no-daemon assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk tagesplan-widget.apk
+          rm -f "$RUNNER_TEMP/tagesplan.p12"
+
+      - name: App hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: tagesplan-widget.apk
+          if-no-files-found: ignore
+
+      - name: Veröffentlichen
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" tagesplan-widget.apk \
+            --title "Tagesplan Widget ${GITHUB_REF_NAME#v}" \
+            --notes "Auf dem Handy herunterladen und installieren. Anleitung im README."

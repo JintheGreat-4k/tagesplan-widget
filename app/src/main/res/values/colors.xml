@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Farben wie in der Web-App (hell). Dunkel: values-night. -->
+<resources>
+    <color name="flaeche">#FFFFFF</color>
+    <color name="flaeche2">#E8EDEB</color>
+    <color name="ink">#14201B</color>
+    <color name="ink2">#46544E</color>
+    <color name="ink3">#66726C</color>
+    <color name="linie">#D3DCD8</color>
+    <color name="akzent">#1C5A78</color>
+    <color name="spaet">#B3261E</color>
+    <color name="heute">#8F5300</color>
+    <color name="ok">#2E7A49</color>
+    <color name="a_inbox">#646D68</color>
+    <color name="a_zivi">#2A5FB5</color>
+    <color name="a_bewerbung">#7646AD</color>
+    <color name="a_pfadi">#277042</color>
+    <color name="a_projekte">#A54A15</color>
+    <color name="a_privat">#0B7280</color>
+    <color name="symbol_hg">#1C5A78</color>
+    <color name="symbol_punkt">#F2B660</color>
+</resources>

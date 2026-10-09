@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="flaeche">#161E1B</color>
+    <color name="flaeche2">#202A26</color>
+    <color name="ink">#E6EEEA</color>
+    <color name="ink2">#A9B6B0</color>
+    <color name="ink3">#7D8A84</color>
+    <color name="linie">#2B3732</color>
+    <color name="akzent">#72B6D8</color>
+    <color name="spaet">#FF8F85</color>
+    <color name="heute">#F2B660</color>
+    <color name="ok">#79CC96</color>
+    <color name="a_inbox">#A2A9A5</color>
+    <color name="a_zivi">#86ACEF</color>
+    <color name="a_bewerbung">#BC9FE3</color>
+    <color name="a_pfadi">#79CC96</color>
+    <color name="a_projekte">#EE9C69</color>
+    <color name="a_privat">#5CC6CF</color>
+</resources>
