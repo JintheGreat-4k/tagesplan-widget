@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import java.util.regex.Pattern;
 
-/** Öffnet die Web-App «Marcs Tagesplan», wenn möglich direkt die installierte App statt eines Chrome-Tabs. */
+/** Öffnet den Tagesplan im Lauener Lifehub, wenn möglich direkt die installierte App statt eines Chrome-Tabs. */
 final class Oeffnen {
     // Sprungziele, die die Web-App kennt (nach dem #)
     private static final Pattern ZIEL = Pattern.compile("^(heute|neu|termin|kalender(=\\d{4}-\\d{2}-\\d{2})?|aufgabe=[\\w.:@-]{1,200})$");

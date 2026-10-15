@@ -79,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Öffne die App «Marcs Tagesplan», tippe aufs Zahnrad und wähle «Widget-App verbinden». Danach kommst du hierher zurück und tippst «Verbinden»."
+                android:text="Zum Verbinden brauchst du den Einrichtungslink. Wie du ihn bekommst, steht im Notfall-Blatt des Lifehub unter «Widget-App neu verbinden»."
                 android:textSize="15sp" />
 
             <TextView
@@ -87,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Oder den Einrichtungslink einfügen (beginnt mit https://jinthegreat-4k.github.io/tagesplan/#u=):"
+                android:text="Einrichtungslink einfügen (enthält #u= und &amp;k=):"
                 android:textSize="14sp" />
 
             <EditText

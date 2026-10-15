@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 /** Adresse und Schlüssel des Google-Skripts. Liegen nur in den privaten Daten der App. */
 final class Konfig {
-    static final String APP_URL = "https://jinthegreat-4k.github.io/tagesplan/";
+    static final String APP_URL = "https://lauener.online/plan/";
     static final Pattern URL_RE = Pattern.compile("^https://script\\.google\\.com/(?:a/macros/[^/?#]+|macros)/s/[\\w-]+/exec$");
     // Nur für den Test auf dem Emulator (Debug-Version): nachgebildetes Skript auf dem Rechner
     static final Pattern TEST_URL_RE = Pattern.compile("^http://10\\.0\\.2\\.2:\\d{2,5}/macros/s/[\\w-]+/exec$");
