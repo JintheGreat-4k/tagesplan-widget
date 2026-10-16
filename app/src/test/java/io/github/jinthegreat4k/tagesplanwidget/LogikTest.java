@@ -183,6 +183,76 @@ public class LogikTest {
         for (Zeile x : z) assertTrue(nummern.add(x.nummer()));
     }
 
+    /* ---------- Nur was der Lifehub weitergibt (BAUPLAN-WIDGET W5) ---------- */
+
+    private static final List<String> AUFGABE_FELDER = List.of("id", "title", "area", "due", "created", "done", "doneAt", "next", "removed");
+    private static final List<String> TERMIN_FELDER = List.of("cal", "calName", "id", "serie", "title", "ort", "allDay", "sd", "st", "ed", "et");
+
+    private static JSONObject nur(JSONObject o, List<String> felder) throws Exception {
+        JSONObject p = new JSONObject();
+        for (String f : felder) if (o.has(f)) p.put(f, o.get(f));
+        return p;
+    }
+
+    /** Die Antwort auf «load», wie /api/widget/plan sie der Widget-App gibt: nur diese Felder */
+    private static JSONObject projektion(JSONObject daten) throws Exception {
+        JSONArray ts = new JSONArray();
+        JSONArray alle = daten.getJSONArray("tasks");
+        for (int i = 0; i < alle.length(); i++) {
+            JSONObject t = alle.getJSONObject(i);
+            ts.put(nur(t, AUFGABE_FELDER).put("src", nur(t.getJSONObject("src"), List.of("type", "kind"))));
+        }
+        JSONObject b = daten.getJSONObject("briefing");
+        JSONObject pb = new JSONObject().put("date", b.get("date"));
+        for (String k : List.of("probablyDone", "probablyPaid")) {
+            JSONArray ids = new JSONArray();
+            JSONArray a = b.optJSONArray(k);
+            for (int i = 0; a != null && i < a.length(); i++) ids.put(new JSONObject().put("id", a.getJSONObject(i).get("id")));
+            pb.put(k, ids);
+        }
+        return new JSONObject().put("tasks", ts).put("briefing", pb);
+    }
+
+    private static List<String> texte(List<Zeile> zs) {
+        List<String> out = new ArrayList<>();
+        for (Zeile z : zs) {
+            out.add(z.art + "|" + z.schluessel + "|" + z.text + "|" + z.zahl + "|" + z.frist + "|" + z.fristArt + "|" + z.info + "|"
+                    + z.erledigt + "|" + z.zeit + "|" + z.vorbei + "|" + z.kalender + "|" + z.heute + "|" + z.frei + "|" + z.ziel);
+        }
+        return out;
+    }
+
+    @Test
+    public void reichtWasDerLifehubWeitergibt() throws Exception {
+        // Vollständige Antwort des Skripts, mit Feldern, die der Lifehub der Widget-App nie weitergibt
+        JSONObject voll = daten();
+        JSONArray ts = voll.getJSONArray("tasks");
+        for (int i = 0; i < ts.length(); i++) {
+            JSONObject t = ts.getJSONObject(i);
+            t.put("remind", "2026-10-11T08:00");
+            t.getJSONObject("src").put("url", "https://mail.google.com/").put("ref", "abc123");
+        }
+        voll.getJSONObject("briefing").put("events", new JSONArray()).put("starCanGo", new JSONArray())
+                .getJSONArray("probablyPaid").getJSONObject(0).put("title", "Rechnung Muster AG").put("url", "https://mail.google.com/");
+        voll.put("sheetUrl", "https://docs.google.com/").put("settings", new JSONObject().put("geraete", new JSONArray()));
+
+        Logik.Ergebnis a = Logik.aufgaben(voll, new HashMap<>(), Set.of(), HEUTE);
+        Logik.Ergebnis b = Logik.aufgaben(projektion(voll), new HashMap<>(), Set.of(), HEUTE);
+        assertEquals(texte(a.zeilen), texte(b.zeilen));
+        assertEquals(a.offen, b.offen);
+        assertEquals(a.faellig, b.faellig);
+        assertEquals("Privat · Mail · vermutlich bezahlt", zeile(b.zeilen, "a5").info);
+
+        JSONArray ev = new JSONArray();
+        ev.put(termin("haupt", "Hauptkalender", "Brunch", false, "2026-10-10", "10:00", "2026-10-10", "11:00")
+                .put("serie", JSONObject.NULL).put("edit", true).put("popup", 30));
+        ev.put(termin("familie", "Familie", "Herbstlager", true, "2026-10-11", null, "2026-10-13", null).put("ort", "Engelberg")
+                .put("serie", "s1").put("edit", false));
+        JSONArray evNur = new JSONArray();
+        for (int i = 0; i < ev.length(); i++) evNur.put(nur(ev.getJSONObject(i), TERMIN_FELDER));
+        assertEquals(texte(Logik.termine(ev, HEUTE, LocalTime.of(12, 0))), texte(Logik.termine(evNur, HEUTE, LocalTime.of(12, 0))));
+    }
+
     @Test
     public void datumTexte() {
         assertEquals("Heute", Logik.tagKurz("2026-10-10", HEUTE));

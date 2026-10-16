@@ -127,10 +127,13 @@ final class Darstellung {
     private static RemoteViews nichtVerbunden(Context c, RemoteViews rv) {
         PendingIntent einrichten = PendingIntent.getActivity(c, 7, new Intent(c, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-        rv.setTextViewText(R.id.status, "Noch nicht verbunden");
+        // Getrennt: im Lifehub entfernt (oder überall abgemeldet). Aufgaben und Termine sind dann schon gelöscht.
+        boolean getrennt = Konfig.getrennt(c);
+        rv.setTextViewText(R.id.status, getrennt ? "Getrennt" : "Noch nicht verbunden");
         rv.setViewVisibility(R.id.liste, View.GONE);
         rv.setViewVisibility(R.id.leer, View.VISIBLE);
-        rv.setTextViewText(R.id.leer, "Antippen, um das Widget mit deinem Tagesplan zu verbinden.");
+        rv.setTextViewText(R.id.leer, getrennt ? "Vom Lifehub getrennt. Antippen und neu verbinden."
+                : "Antippen, um das Widget mit deinem Tagesplan zu verbinden.");
         rv.setOnClickPendingIntent(R.id.leer, einrichten);
         rv.setOnClickPendingIntent(R.id.kopf_text, einrichten);
         return rv;
@@ -213,15 +216,7 @@ final class Darstellung {
         String s = Logik.stand(stand, ZonedDateTime.now(Logik.TZ));
         String f = Speicher.fehler(c);
         if (f == null) return s;
-        String ft;
-        switch (f) {
-            case "offline": ft = "Offline"; break;
-            case "timeout": ft = "Skript zu langsam"; break;
-            case "unauthorized": ft = "Schlüssel stimmt nicht"; break;
-            case "bad_response": ft = "Skript antwortet nicht richtig"; break;
-            case "server": ft = "Fehler im Skript"; break;
-            default: ft = "Keine Verbindung";
-        }
+        String ft = Api.wort(f);
         return s.isEmpty() ? ft : ft + " · " + s;
     }
 

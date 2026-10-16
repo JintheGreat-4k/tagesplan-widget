@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Token und gespeicherte Aufgaben und Termine bleiben auf diesem Handy: weder in der Google-Sicherung noch beim Umzug
+     auf ein neues Handy (z. B. Samsung Smart Switch). Auf dem neuen Handy die Widget-App im Lifehub neu verbinden. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="konfig.xml" />
+        <exclude domain="sharedpref" path="daten.xml" />
+        <exclude domain="file" path="aufgaben.json" />
+        <exclude domain="file" path="termine.json" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="sharedpref" path="konfig.xml" />
+        <exclude domain="sharedpref" path="daten.xml" />
+        <exclude domain="file" path="aufgaben.json" />
+        <exclude domain="file" path="termine.json" />
+    </device-transfer>
+</data-extraction-rules>

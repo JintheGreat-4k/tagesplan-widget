@@ -15,13 +15,17 @@
         </intent>
     </queries>
 
+    <!-- Kein Backup und kein Umzug der Daten (Token, Aufgaben, Termine): allowBackup und datenregeln.xml -->
     <application
         android:allowBackup="false"
+        android:dataExtractionRules="@xml/datenregeln"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="false">
 
-        <!-- Einrichten. Die Web-App öffnet sie mit tagesplanwidget://verbinden und übergibt Adresse und Schlüssel. -->
+        <!-- Einrichten. Der Tagesplan im Lifehub öffnet sie mit intent://code (Schema tagesplanwidget) und übergibt nur
+             den Widget-Code (Extra c). 1.0/1.1 kannten nur tagesplanwidget://verbinden: Ältere Versionen öffnen sich
+             so nicht, Chrome zeigt stattdessen die Anleitung zum Installieren. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -36,7 +40,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="tagesplanwidget" android:host="verbinden" />
+                <data android:scheme="tagesplanwidget" android:host="code" />
             </intent-filter>
         </activity>
 

@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * Nur für den Emulator-Test: zeigt beide Widgets wie ein Startbildschirm (eigener Widget-Host).
- * Mit dem Extra «klick=abhaken» tippt sie den ersten Haken im Aufgaben-Widget an.
+ * Mit dem Extra «klick=abhaken» tippt sie den ersten Haken im Aufgaben-Widget an, mit «klick=aktualisieren» das erste ↻.
  */
 public final class TestHostActivity extends Activity {
     private static final int HOST_ID = 4711;
@@ -105,14 +105,16 @@ public final class TestHostActivity extends Activity {
     }
 
     private void klickSpaeter(Intent i) {
-        if (i == null || !"abhaken".equals(i.getStringExtra("klick"))) return;
+        String klick = i != null ? i.getStringExtra("klick") : null;
+        int ziel = "abhaken".equals(klick) ? R.id.haken : "aktualisieren".equals(klick) ? R.id.aktualisieren : 0;
+        if (ziel == 0) return;
         ui.postDelayed(() -> {
-            View v = finde(box, R.id.haken);
+            View v = finde(box, ziel);
             if (v != null) {
-                Log.i(Speicher.TAG, "Test: tippe ersten Haken an");
+                Log.i(Speicher.TAG, "Test: tippe an: " + klick);
                 v.performClick();
             } else {
-                Log.w(Speicher.TAG, "Test: kein Haken gefunden");
+                Log.w(Speicher.TAG, "Test: nichts zum Antippen gefunden: " + klick);
             }
         }, 1500);
     }

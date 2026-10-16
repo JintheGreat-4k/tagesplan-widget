@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/** Letzter Stand vom Google-Skript, Status und Änderungen, die noch gesendet werden müssen. Alles nur auf dem Handy. */
+/** Letzter Stand vom Tagesplan (über den Lifehub), Status und Änderungen, die noch gesendet werden müssen. Alles nur auf dem Handy. */
 final class Speicher {
     static final String TAG = "Tagesplan";
     private static final Object LOCK = new Object();
@@ -178,13 +178,19 @@ final class Speicher {
         return j.toString();
     }
 
-    /** Beim Trennen: alles vergessen */
+    /** Beim Trennen, beim Verbinden und wenn der Lifehub die Verbindung entfernt hat: alles vergessen */
     static void allesLoeschen(Context c) {
         synchronized (LOCK) {
             prefs(c).edit().clear().apply();
             new File(c.getFilesDir(), "aufgaben.json").delete();
             new File(c.getFilesDir(), "termine.json").delete();
         }
+    }
+
+    /** Für die Einrichtungsseite: neu zeigen, sobald ein Abgleich Stand oder Fehler ändert */
+    static void beobachten(Context c, SharedPreferences.OnSharedPreferenceChangeListener l, boolean an) {
+        if (an) prefs(c).registerOnSharedPreferenceChangeListener(l);
+        else prefs(c).unregisterOnSharedPreferenceChangeListener(l);
     }
 
     /* ---------- Dateien ---------- */
